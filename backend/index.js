@@ -1,4 +1,5 @@
 const { request, response } = require("express");
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
@@ -6,6 +7,9 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 app.use(express.json());
+
+const Contact = require("./models/note");
+
 morgan.token("request-body", function (req, res) {
   return JSON.stringify(req.body);
 });
@@ -48,9 +52,12 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.filter((person) => person.id === id);
-  response.status(200).json(person[0]);
+  Contact.findById(request.params.id).then((contact) => {
+    response.json(contact);
+  });
+  // const id = Number(request.params.id);
+  // const person = persons.filter((person) => person.id === id);
+  // response.status(200).json(person[0]);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -60,26 +67,39 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons/", (request, response) => {
-  const id = idGenerator();
   const body = request.body;
-  if (!request.body.name) {
-    return response.status(400).json({ error: "must enter a name" });
-  } else if (!request.body.number) {
-    return response.status(400).json({ error: "must enter a number" });
+  if (body.name === undefined) {
+    return response.status(400).json({ error: "name missing" });
+  } else if (body.number === undefined) {
+    return response.status(400).json({ error: "name missing" });
   }
-  if (!isNameDuplicated(body.name, persons)) {
-    return response.status(400).json({ error: "name must be unique" });
-  }
-  //   isNameDuplicated(body.name, persons);
-  const person = [
-    {
-      id: id,
-      name: body.name,
-      number: body.number,
-    },
-  ];
-  persons = persons.concat(person);
-  response.status(200).json(person[0]);
+  const person = new Contact({
+    name: body.name,
+    phoneNumber: body.number,
+  });
+  person.save().then((savedNote) => {
+    response.json(savedNote);
+  });
+  // const id = idGenerator();
+  // const body = request.body;
+  // if (!request.body.name) {
+  //   return response.status(400).json({ error: "must enter a name" });
+  // } else if (!request.body.number) {
+  //   return response.status(400).json({ error: "must enter a number" });
+  // }
+  // if (!isNameDuplicated(body.name, persons)) {
+  //   return response.status(400).json({ error: "name must be unique" });
+  // }
+  // //   isNameDuplicated(body.name, persons);
+  // const person = [
+  //   {
+  //     id: id,
+  //     name: body.name,
+  //     number: body.number,
+  //   },
+  // ];
+  // persons = persons.concat(person);
+  // response.status(200).json(person[0]);
 });
 
 function idGenerator() {

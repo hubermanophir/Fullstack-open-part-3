@@ -18,13 +18,12 @@ mongoose
     console.log("error connecting to MongoDB:", error.message);
   });
 
-const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean,
+const phoneSchema = new mongoose.Schema({
+  name: String,
+  phoneNumber: Number,
 });
 
-noteSchema.set("toJSON", {
+phoneSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -32,4 +31,4 @@ noteSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Note", noteSchema);
+module.exports = mongoose.model("Note", phoneSchema);
