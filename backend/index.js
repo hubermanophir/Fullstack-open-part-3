@@ -111,36 +111,36 @@ app.post("/api/persons/", (request, response) => {
     name: body.name,
     phoneNumber: body.number,
   });
-  person.save()
-  .then(savedNote => {
-    return savedNote.toJSON()
-  })
-  .then(savedAndFormattedNote => {
-    response.json(savedAndFormattedNote)
-  }) 
-  .catch(error => next(error)) 
-  });
-  // const id = idGenerator();
-  // const body = request.body;
-  // if (!request.body.name) {
-  //   return response.status(400).json({ error: "must enter a name" });
-  // } else if (!request.body.number) {
-  //   return response.status(400).json({ error: "must enter a number" });
-  // }
-  // if (!isNameDuplicated(body.name, persons)) {
-  //   return response.status(400).json({ error: "name must be unique" });
-  // }
-  // //   isNameDuplicated(body.name, persons);
-  // const person = [
-  //   {
-  //     id: id,
-  //     name: body.name,
-  //     number: body.number,
-  //   },
-  // ];
-  // persons = persons.concat(person);
-  // response.status(200).json(person[0]);
+  person
+    .save()
+    .then((savedNote) => {
+      return savedNote.toJSON();
+    })
+    .then((savedAndFormattedNote) => {
+      response.json(savedAndFormattedNote);
+    })
+    .catch((error) => next(error));
 });
+// const id = idGenerator();
+// const body = request.body;
+// if (!request.body.name) {
+//   return response.status(400).json({ error: "must enter a name" });
+// } else if (!request.body.number) {
+//   return response.status(400).json({ error: "must enter a number" });
+// }
+// if (!isNameDuplicated(body.name, persons)) {
+//   return response.status(400).json({ error: "name must be unique" });
+// }
+// //   isNameDuplicated(body.name, persons);
+// const person = [
+//   {
+//     id: id,
+//     name: body.name,
+//     number: body.number,
+//   },
+// ];
+// persons = persons.concat(person);
+// response.status(200).json(person[0]);
 
 app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body;
