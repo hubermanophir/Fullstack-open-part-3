@@ -7,6 +7,7 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 app.use(express.json());
+const mongoose = require("mongoose");
 
 const Contact = require("./models/note");
 const e = require("express");
@@ -53,7 +54,15 @@ let persons = [
 ];
 
 app.get("/api/persons", (request, response) => {
-  response.status(200).json(persons);
+  const persons = [];
+  Contact.find({}).then((result) => {
+    result.forEach((contact) => {
+      persons.push(contact);
+    });
+    response.json(persons);
+    console.log(persons);
+    mongoose.connection.close();
+  });
 });
 
 app.get("/info", (request, response) => {
