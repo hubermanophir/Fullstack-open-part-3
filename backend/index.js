@@ -57,11 +57,18 @@ app.get("/api/persons", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  const personsLength = persons.length;
-  const date = new Date();
-  const message = `Phonebook has info for ${personsLength} people 
-  ${date}`;
-  response.status(200).send(message);
+  // const personsLength = persons.length;
+  // const date = new Date();
+  // const message = `Phonebook has info for ${personsLength} people
+  // ${date}`;
+  // response.status(200).send(message);
+  Contact.find({}).then((result) => {
+    console.log("phonebook");
+    result.forEach((contact) => {
+      console.log(contact.name, contact.phoneNumber);
+    });
+    mongoose.connection.close();
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
@@ -83,7 +90,7 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  Note.findByIdAndRemove(request.params.id)
+  Contact.findByIdAndRemove(request.params.id)
     .then((result) => {
       response.status(204).end();
     })
@@ -129,16 +136,17 @@ app.post("/api/persons/", (request, response) => {
   // response.status(200).json(person[0]);
 });
 
-app.put("/api/notes/:id", (request, response, next) => {
+app.put("/api/persons/:id", (request, response, next) => {
   const body = request.body;
-
-  const note = {
-    content: body.content,
-    important: body.important,
-  };
-
-  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+  const person = new Contact({
+    name: body.name,
+    phoneNumber: body.phoneNumber,
+  });
+  const newNumber = { phoneNumber: person.phoneNumber };
+  console.log(newNumber);
+  Contact.findByIdAndUpdate(request.params.id, newNumber)
     .then((updatedNote) => {
+      // console.log(updatedNote);
       response.json(updatedNote);
     })
     .catch((error) => next(error));

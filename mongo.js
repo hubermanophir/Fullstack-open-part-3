@@ -26,7 +26,6 @@ const phoneSchema = new mongoose.Schema({
 });
 
 const Contact = mongoose.model("Note", phoneSchema);
-
 const person = new Contact({
   name: name,
   phoneNumber: phoneNumber,

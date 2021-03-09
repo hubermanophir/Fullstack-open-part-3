@@ -1,8 +1,8 @@
-GET http://localhost:3001/api/persons/60463bd50d013d2900bdd29d
+GET http://localhost:3001/api/persons/60474cf760b66737486aad8a
 
 ###
 
-DELETE http://localhost:3001/api/persons/1
+DELETE http://localhost:3001/api/persons/60463bd50d013d2900bdd29d
 
 ###
 POST http://localhost:3001/api/persons/
@@ -10,5 +10,17 @@ Content-Type: application/json
 
 {
     "name":"ophir",
-    "number":1565646
+    "phoneNumber":342365646
+}
+
+###
+GET http://localhost:3001/info
+
+###
+PUT http://localhost:3001/api/persons/60474cf760b66737486aad8a
+Content-Type: application/json
+
+{
+    "name":"ophir",
+    "phoneNumber":2120
 }
