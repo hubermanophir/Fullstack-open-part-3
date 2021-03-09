@@ -9,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 const Contact = require("./models/note");
+const e = require("express");
 
 morgan.token("request-body", function (req, res) {
   return JSON.stringify(req.body);
@@ -20,6 +21,18 @@ app.use(express.static(path.join(__dirname, "..", "front", "build")));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "front", "build", "index.html"));
 });
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 let persons = [
   {
@@ -52,18 +65,32 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  Contact.findById(request.params.id).then((contact) => {
-    response.json(contact);
-  });
+  Contact.findById(request.params.id)
+    .then((contact) => {
+      if (contact) {
+        response.json(contact);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      response.status(500).end();
+    });
   // const id = Number(request.params.id);
   // const person = persons.filter((person) => person.id === id);
   // response.status(200).json(person[0]);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id !== id);
-  response.status(200).json(persons);
+  Note.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
+  // const id = Number(request.params.id);
+  // persons = persons.filter((person) => person.id !== id);
+  // response.status(200).json(persons);
 });
 
 app.post("/api/persons/", (request, response) => {
@@ -71,7 +98,7 @@ app.post("/api/persons/", (request, response) => {
   if (body.name === undefined) {
     return response.status(400).json({ error: "name missing" });
   } else if (body.number === undefined) {
-    return response.status(400).json({ error: "name missing" });
+    return response.status(400).json({ error: "number missing" });
   }
   const person = new Contact({
     name: body.name,
@@ -100,6 +127,21 @@ app.post("/api/persons/", (request, response) => {
   // ];
   // persons = persons.concat(person);
   // response.status(200).json(person[0]);
+});
+
+app.put("/api/notes/:id", (request, response, next) => {
+  const body = request.body;
+
+  const note = {
+    content: body.content,
+    important: body.important,
+  };
+
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then((updatedNote) => {
+      response.json(updatedNote);
+    })
+    .catch((error) => next(error));
 });
 
 function idGenerator() {
