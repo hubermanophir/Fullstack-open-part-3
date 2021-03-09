@@ -111,8 +111,14 @@ app.post("/api/persons/", (request, response) => {
     name: body.name,
     phoneNumber: body.number,
   });
-  person.save().then((savedNote) => {
-    response.json(savedNote);
+  person.save()
+  .then(savedNote => {
+    return savedNote.toJSON()
+  })
+  .then(savedAndFormattedNote => {
+    response.json(savedAndFormattedNote)
+  }) 
+  .catch(error => next(error)) 
   });
   // const id = idGenerator();
   // const body = request.body;
